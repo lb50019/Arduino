@@ -14,6 +14,7 @@ This project demonstrates a basic circuit using a microphone and OP-amp alongsid
 The very mention of sound detection implies usage of microphones, types of transducers which convert sound to electric signal. Not only is the output signal very weak even for nearby sources of sound, but it also contains noise. For this reason the LM386 amplifier is conected to the mic with electrolytic capacitors which filter out unwanted noise. The schematic below shows one way of achieving amplification of filtered signal.
 
 ![This is an alt text.](op_amp_srkt.png "Circuit diagram.")
+![This is an alt text.](op_amp_srkt_tagged.png "Live circuit reaction.")
 
 Capacitor C2 is added to further increase the amplification of the signal. This is more-or-less neccessary for any practical use.
 
@@ -68,7 +69,6 @@ _You **can** combine them_
 ## Images
 
 ![This is an alt text.](val12.png "Signal detected at analog pin 0.")
-![This is an alt text.](op_amp_srkt_tagged.png "Live circuit reaction.")
 
 ## Links
 
