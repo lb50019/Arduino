@@ -17,7 +17,7 @@ The very mention of sound detection implies usage of microphones, types of trans
 
 Capacitor C2 is added to further increase the amplification of the signal. This is more-or-less neccessary for any practical use.
 
-Below is a simple code used to display the signal, along with a plotted output. Despite all the capacitors the noise is still present! Or maybe it's just the voices in my walls, who knows.
+Below is a simple code used to display the signal, along with a plotted output. Despite all the capacitors the noise is still present! The only likely reasons for this are imperfections of cheap components or the voices in my walls, who knows.
 
 ```c
 void setup() {
@@ -68,6 +68,7 @@ _You **can** combine them_
 ## Images
 
 ![This is an alt text.](val12.png "Signal detected at analog pin 0.")
+![This is an alt text.](op_amp_srkt_tagged.png "Live circuit reaction.")
 
 ## Links
 
@@ -97,3 +98,4 @@ alert(message);
 ## Inline code
 
 This web site is using `markedjs/marked`.
+
