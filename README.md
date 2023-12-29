@@ -72,14 +72,17 @@ _You **can** combine them_
 
 ## Summary
 
-* What is this?
-	Sound Detection circuit.
+>What is this?
+>
+>> Sound Detection circuit.
 	
-* Is it useful?
-	No, not by itself.
+>Is it useful?
+>
+>> No, not by itself.
 	
-* Why would I want do build one?
-	You can make many other projects on top of this one to impress people coming from LinkedIn. Go and check my other projects on this repo to become inspired!    
+>Why would I want do build one?
+>
+>> You can make many other projects on top of this one to impress people coming from LinkedIn. Go and check my other projects on this repo to become inspired!    
 
 ## Links
 
