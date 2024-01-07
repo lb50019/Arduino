@@ -55,8 +55,7 @@ void ISR_ClapDetected()
 This function reacts to the sound of clapping and fills the *ClapDetectedTime* array with values which represent time at which a falling edge is detected. 
 Since this array can hold only 3 values, every 200 miliseconds the values are updated so that the earlier detections are on a lower index.
 The third value is always the newest clap detected.
-```
-c
+```c
 void loop() {
 delay(2);
 
