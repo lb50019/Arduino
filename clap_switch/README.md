@@ -113,8 +113,6 @@ _You **can** combine them_
 
 ## Images
 
-![This is an alt text.](ledo.png "LED diode circuit.")
-
 ## Summary
 
 > **What is this?**
