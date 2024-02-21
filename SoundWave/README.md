@@ -122,7 +122,7 @@ One of the most basic signals we humans can do with our hands is pointing finger
 In light of these observations I decided to intepret raised finger as a positive and lowered (folded) finger as negative. Consulting the landmark diagram, it is obvious that the y coordinate of the tip of the finger is positioned higher than the other parts of the finger. The opposite is true for the folded finger: the tip is positioned lower than other parts. By comparing coordinates of the tip with some other part of the same finger it is possible to control the value of variables using fingers as input. In this project each finger is represented by a variable with two possible states: raised (1) or lowered (0). These variables are then stored into a list for improved readability.
 This thought process is realized with the following code:
 
-```{python}
+```python
 import cv2
 import time
 import HandTrackingModule as htm
