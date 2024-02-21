@@ -15,7 +15,7 @@ Mediapipe contains a lot of computer vision models for all kinds of purposes and
 the Hand Tracking crops the given image so that only one hand is visible, adding landmarks afterwards.
 This is useful for triggering events based on the position of hands on the screen, as well as relative position of fingers.
 
-[This is an alt text.](hand-landmarks.png "Hand landmarks.")
+[Hand landmarks.](hand-landmarks.png "Hand landmarks.")
 
 The easiest way to implement mediapipe is by using PyCharm IDE, which enables a simple installation of all available packages with a few clicks. This necessitates usage of OpenCV library as well.
 After typing the basic lines of code to display the webcam, Hands module must be implemented.
@@ -152,6 +152,60 @@ while 1:
 ```
 
 # PRELISTAJ NA 12:20
+
+#SN76489
+
+Barely larger than a raisin, this chip contains a whole decade of sound design and still refuses to leave in silence. It was made by Texas Instruments in 1979 and for the next 10 years it sat comfortably in cases of many home computers and arcade machines. It is a Digital Complex Sound Generator (DSCG) with 3 square wave tone generators and one noise generator. The three tone generators were used for melodies, while the noise channel found its use in simulating sounds of explosions or percussion.
+
+[SN76489 pins.](SN76489_pinout.png "SN76489 pins")
+
+As shown in the image, the pins can be divided into these categories:
+
+* input pins (D0-D7)
+* audio out (pin 7)
+* clk (pin 14)
+* /WE (active low write enable, pin 5)
+* VCC (pin 15)
+* /CE (active low chip enable, pin 6)
+* GND (pin 8)
+* RDY (unused)
+
+The chip receives input from 8 digital pins, as well as from a 4 MHz crystal oscillator which powers its IC.
+A microprocessor programs the IC by sending bytes of data from pins D0 - D7. These bytes contain information about the desired channel, volume and attenuation of the sound. Setting the noise and attenuation of the channels requires 1 byte, while frequency is sent with 2 bytes. Image below shows all possible values of bytes that can be interpreted by the microprocessor.
+
+[bytes.](bytes.png "bytes")
+
+The frequency of the square waves produced by the tone generators on each channel is derived from two factors:
+* the speed of the crystal oscillator
+* value of desired frequency
+
+To summarize, the byte containing information about desired frequency is calculated with this formula:
+
+(4*10^6/(32 * f) ALI LJEPŠE)
+
+where f is the desired frequency. This number must be translated to binary form.
+
+
+## COMPOSER OR COMPILER?
+
+In contrast to everything mentioned above, coding proves to be quite simple. All it takes is two functions and a copy-paste shortcut.
+Pins are assigned in the setup function with pinMode() and data is sent with digitalWrite(). Sending bytes works the same way as sending one bit, only difference being that the same function must be called 8 times for every bit in the byte. It ends up looking like this:
+
+(SendByte funkcija)
+
+alternatively, you can show mercy to your copy and paste buttons by sending bits with a for loop instead:
+
+```c
+int i = 1;
+int pins = {D0, D1, D2, D3, D4, D5, D6, D7};
+int bit = 1; 
+
+for(i; i < 8; i++)
+{
+	digitalWrite(pins[i], (b&bit) ? HIGH, LOW);
+	bit *= 2;
+}
+```
 
 ## Headers
 
