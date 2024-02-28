@@ -360,7 +360,7 @@ board.set_pin_mode_digital_output(WE)
 board.digital_write(WE, 1)
 
 c3 = int(4*10**6/(32*128))
-c3l = c3 & 0xF							
+c3l = c3 & 0xF
 c3h = (c3 & 0x3F0) >> 4
 
 d3 = int(4*10**6/(32*147))
@@ -383,6 +383,29 @@ a3 = int(4*10**6/(32*220))
 a3l = a3 & 0xF
 a3h = (a3 & 0x3F0) >> 4
 
+b3 = int(4*10**6/(32*247))
+b3l = b3 & 0xF
+b3h = (b3 & 0x3F0) >> 4
+
+c4 = int(4*10**6/(32*261))
+c4l = c4 & 0xF
+c4h = (c4 & 0x3F0) >> 4
+
+d4 = int(4*10**6/(32*294))
+d4l = d4 & 0xF
+d4h = (d4 & 0x3F0) >> 4
+
+e4 = int(4*10**6/(32*330))
+e4l = e4 & 0xF
+e4h = (e4 & 0x3F0) >> 4
+
+f4 = int(4*10**6/(32*350))
+f4l = f4 & 0xF
+f4h = (f4 & 0x3F0) >> 4
+
+g4 = int(4*10**6/(32*392))
+g4l = g4 & 0xF
+g4h = (g4 & 0x3F0) >> 4
 note = []
 
 ```
@@ -439,7 +462,7 @@ def sendByte(b):
     time.sleep(0.001)
     board.digital_write(WE, 1)
 
-def silenceAllChannels(n):
+def silenceChannel(n):
     if n == 0:
         sendByte(0x9F)
     elif n == 1:
@@ -447,8 +470,92 @@ def silenceAllChannels(n):
     elif n == 2:
         sendByte(0xDF)
 
+def silenceAllChannels():
+    sendByte(0x9F)
+    sendByte(0xBF)
+    sendByte(0xDF)
+    sendByte(0xFF)
+    
 ```
-(IZBRIŠI ZADNJI RED ILI SKRATI OPĆENITO)
+
+The meat of this project is the endless while loop shown below. It can be summarized like this:
+* read data from camera and initialize hand tracking algorithm to recognize one hand. Store results of detection in a list containing hand landmark indexes
+* if a hand is detected, for each individual finger check if its raised up or folded down. Append 1 to the fingers list if raised, otherwise append 0.
+* If condition for thumb compares x coordinates, while the rest of the fingers are determined with y coordinate
+* depending in the position of the hand, choose the apropriate frequency 
+* lower notes are played for lower position
+* if the fingers list is not empty, send bytes of chosen frequency to the SN76489 soundchip. If the finger is closed, mute the corresponding channel
+* display the result on the camera using imshow
+
+```python
+
+while 1:
+    success, img = cap.read()
+    img = detector.findHands(img)
+    lmList1 = detector.findPosition(img, 0, draw=False)
+
+    fingers = []
+    if lmList1:
+
+        if lmList1[tipIds[0]][1] > lmList1[tipIds[0] - 1][1]:
+            fingers.append(1)
+        else:
+            fingers.append(0)
+
+        for id in range(1, 5):
+            if lmList1[tipIds[id]][2] < lmList1[tipIds[id] - 2][2]:
+                fingers.append(1)
+            else:
+                fingers.append(0)
+
+        if lmList1[13][2] < 60:
+            note = [[c4l, c4h], [e4l, e4h], [g4l, g4h]]
+        elif lmList1[13][2] < 120 and lmList1[13][2] > 60:
+            note = [[b3l, b3h], [d4l, d4h], [f4l, f4h]]
+        elif lmList1[13][2] < 180 and lmList1[13][2] > 120:
+                note = [[a3l, a3h], [c4l, c4h], [e4l, e4h]]
+        elif lmList1[13][2] < 240 and lmList1[13][2] > 180:
+                note = [[g3l, g3h], [b3l, b3h], [d4l, d4h]]
+        elif lmList1[13][2] < 300 and lmList1[13][2] > 240:
+                note = [[f3l, f3h], [a3l, a3h], [c4l, c4h]]
+        elif lmList1[13][2] < 360 and lmList1[13][2] > 300:
+                note = [[e3l, e3h], [g3l, g3h], [b3l, b3h]]
+        elif lmList1[13][2] < 420 and lmList1[13][2] > 360:
+                note = [[d3l, d3h], [f3l, f3h], [a3l, a3h]]
+        elif lmList1[13][2] < 480 and lmList1[13][2] > 420:
+                note = [[c3l, c3h], [e3l, e3h], [g3l, g3h]]
+				
+        #print(fingers)
+        print(lmList1[13][2])
+
+    if fingers:
+
+        if fingers[0]:
+            sendByte(0x90)
+            sendByte(8 * 16 + note[0][0])
+            sendByte(note[0][1])
+        else:
+            silenceChannel(0)
+
+        if fingers[1]:
+            sendByte(0xB0)
+            sendByte(10 * 16 + note[1][0])
+            sendByte(note[1][1])
+        else:
+            silenceChannel(1)
+
+        if fingers[4]:
+            sendByte(0xD0)
+            sendByte(12 * 16 + note[2][0])
+            sendByte(note[2][1])
+        else:
+            silenceChannel(2)
+
+    cv2.imshow("img", img)
+    cv2.waitKey(1)
+
+```
+
 
 ## Headers
 
