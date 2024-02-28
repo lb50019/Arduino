@@ -160,7 +160,7 @@ while 1:
 Barely larger than a raisin, this chip contains a whole decade of sound design and still refuses to leave in silence. It was made by Texas Instruments in 1979 and for the next 10 years it sat comfortably in cases of many home computers and arcade machines. This chip is a Digital Complex Sound Generator (DSCG) with 3 square wave tone generators and one noise generator. The three tone generators were used for melodies, while the noise channel found its use in simulating sounds of explosions or percussion.
 
 ## Pins
-[SN76489 pins.](SN76489_pinout.png "SN76489 pins")
+![SN76489 pins.](SN76489_pinout.png "SN76489 pins")
 
 As shown in the image, the pins can be divided into these categories:
 
@@ -188,8 +188,8 @@ where f is the desired frequency. This number must be translated to binary form.
 The chip receives input from 8 digital pins, as well as from a 4 MHz crystal oscillator which powers its IC.
 A microprocessor programs the IC by sending bytes of data from pins D0 - D7.
 The bytes which can be sent to the chip are one of the two - either latched or data byte. 
-* Latched bytes: Four significant bits carry the information about the desired channel, while the lower four bits store the first four bits of the number we calculated with the formula above
-* Data bytes: 2 most significant bits are 0, while the rest contain last 5 bits of calculated number.
+* Latched bytes: Four significant bits carry the information about the desired channel, while the lower four bits store the first four bits of the number calculated with the formula above
+* Data bytes: 2 most significant bits are 0, while the rest contain last 6 bits of calculated number.
 
 Once a latched byte is sent to the register, all subsequent data bytes will be applied to that register until another latch byte is sent.
  
@@ -207,12 +207,12 @@ The basic process with this chip is that you set up a byte on the eight data pin
 
 ## COMPOSER OR COMPILER?
 
-In contrast to everything mentioned above, coding proves to be quite simple. All it takes is two functions and a copy-paste shortcut.
-Pins are assigned in the setup function with pinMode() and data is sent with digitalWrite(). Sending bytes works the same way as sending one bit, only difference being that the same function must be called 8 times for every bit in the byte. It ends up looking like this:
+In contrast to everything mentioned above, coding proves to be quite simple. All it takes is three functions.
+Pins are assigned in the setup() function with pinMode() and data is sent with digitalWrite(). Sending bytes works the same way as sending one bit, only difference being that the same function must be called 8 times for every bit in the byte.
+My solution to this was checking the value of each bit in a for loop. Checking is performed with *bitwise and operator* and a variable called *bit*, which is shifted at the end of every loop to isolate and verify the value of each bit.
+It ends up looking like this:
 
 (SendByte funkcija)
-
-alternatively, you can show mercy to your copy and paste buttons by sending bits with a for loop instead:
 
 ```c
 
@@ -229,7 +229,7 @@ void putByte(byte b)
 	}
 }
 ```
-Sending pulse to WE pin for sending:
+Sending pulse to WE pin:
 
 ```c
 
@@ -244,8 +244,8 @@ void sendByte(byte b)
 
 ```
 
-Many music teachers will tell you that melodies sound good precisely becuse of the silence between the notes. So to ascend to the next level of musical prowess a silencing function is added:
-It basically sends latched bytes with address and 4-bit data regarding volume: higher number means lower volume.
+Many music teachers will tell you that melodies sound good precisely becuse of the silence between the notes. So to ascend to the higher level of musical prowess a silencing function is added:
+It basically sends latched bytes with address and 4-bit data regarding volume: higher number means lower volume. Hence, total silence equals 1111 or F if you want to pay respects.
 
 ```c
 
@@ -262,7 +262,193 @@ void SilenceAllChannels()
 Here is a simple Arduino sketch playing notes A, B and C:
 
 (STAVI OBRAZLOŽENJE, KAKO SE DOBIJE BAJT, KAKO I ZAŠTO IZGLEDA LATCHED I DATA BYTE)
+In this example, I decided to continuously play C3 (128 Hz), E3 (165 Hz) and G3 (196 Hz).
+
+### C3
+* I increase the volume of channel 0 to maximum by sending 0x90
+* using the formula for the frequency I got 919 or 1110010111 (result must be stored as an int variable)
+* since I want to use channel 0 for this tone, first four bits are 1000 (0x8) while 4 least significant bits are 0111 (0x3).
+* the remaining 6 are 111001. When padded with additional two zeros to form a data byte, I got 00111001 (0x39).
+* this yields 0x83 as a latched and 0x39 as a data byte 
+
+### E3
+* I increase the volume of channel 1 to maximum by sending 0xB0
+* Using the frequnecy formula I got 757 or 1011110101: 4 least significant bits form 0x5 while the remaining 6 padded with additional two zeros at the end form 0x2F 
+* I want to play this tone at channel 1 (0xA), so my latched and data bytes are 0xA5 and 0x2F
+
+### G3
+* I increase the volume of channel 2 to maximum by sending 0xD0
+* Using the frequnecy formula I got 637 or 1001111101: 4 least significant bits form 0xD while the remaining 6 padded with additional two zeros at the end form 0x27
+* I want to play this tone at channel 2 (0xC), so my latched and data bytes are 0xCD and 0x27
+
+This is how the Arduino sketch version of this thought process looks like:
 (OVDJE IDE KOD)
+
+
+
+# (Monty) Python sketch
+
+My Chimera is almost finished. This chapter shows how I merged Computer Vision and Arduino programming with DIY electronics and soldering. This last part was made as a part of a workshop led by Tin Dužić (link neke stranice). 
+
+
+## Amplifier
+This part is practically identical to the sound detection project I made a few folders ago. The only differences are at the ends of the circuit: mic is replaced with an audio jack, while Arduino is replaced with a speaker.
+All capacitors are primarily used to reduce the noise of the signal, while C2 is used to increase the amplification of LM386.
+
+(SLIKA STRUJNOG KRUGA)
+
+To connect the speaker with the rest of the project I used a 3.5mm Jack cable by cutting it in half and removing isolation around the + and ground channels. The tip of the jack is also fitted with a 6mm Jack converter.
+The + and ground wires are connected to pin 7 of SN76489 and common ground respectively.
+
+(SLIKA SVEGA SPOJENOG)
+
+ 
+
+## (Monty) Python sketch
+
+To finally break the silence of this project, it is necessary to break the ice between Arduino and Python. This is made possible by bridging the gap from both sides.
+* pymata4: a Python 3 compatible Firmata protocol which enables the user to control Arduino with the power of the most accessible programming language out there. (https://mryslab.github.io/pymata4/)
+** a high-performance multi-threaded Python application. Its "command thread" translates user API calls into Firmata protocol messages and forwards these messages to the Arduino microcontroller.
+** the "reporter thread" receives, interprets and acts upon the Firmata messages received from the Arduino microcontroller.
+* FirmataPlus: a generic protocol for communicating with microcontrollers from software on a host computer
+** it uses serial interface to transport both command and report information between an Arduino microcontroller and a PC, typically with a serial/USB link set to a rate of 57600 bps.
+** essentially an upgraded version of Firmata enabling tone commands among others.
+
+In this project, the PC using PyMata library serves as a client to the server which is uploaded to Arduino in form of FirmataPlus.
+Firmata uses a serial communications interface to transport data to and from the Arduino. The Firmata communications protocol is derived from the MIDI protocol which uses one or more 7 bit bytes to represent data.
+Because 7 bits can hold a maximum value of 128, a data item that has a value greater than 128, must be "disassembled" into multiple 7 bit byte chunks before being marshaled across the data link.
+By convention, the least significant byte (LSB) of a data item is sent first, followed by increasingly significant components of the data item.
+The most significant byte (MSB) of the data item is the last data item sent.
+
+## The Code
+
+This project requires opencv and pymata4 libraries. The HandTrackingModule discussed in the Computer Vision Chapter is also included.
+Some of the functions replicate behavior of functions written in Arduino sketch. Back there, delay() function was used to synchronize signals. The same effect can be achieved using time module's sleep() method.
+
+```python
+
+import cv2
+import time
+import HandTrackingModule as htm
+from pymata4 import pymata4
+
+``` 
+
+Next step is setting up connetion with the server on the Arduino and declaring output pins. Variables for certain frequencies are also defined:
+
+```python
+
+D0 = 2
+D1 = 3
+D2 = 4
+D3 = 5
+D4 = 6
+D5 = 7
+D6 = 8
+D7 = 9
+WE = 10
+
+board.set_pin_mode_digital_output(D0)
+board.set_pin_mode_digital_output(D1)
+board.set_pin_mode_digital_output(D2)
+board.set_pin_mode_digital_output(D3)
+board.set_pin_mode_digital_output(D4)
+board.set_pin_mode_digital_output(D5)
+board.set_pin_mode_digital_output(D6)
+board.set_pin_mode_digital_output(D7)
+board.set_pin_mode_digital_output(WE)
+board.digital_write(WE, 1)
+
+c3 = int(4*10**6/(32*128))
+c3l = c3 & 0xF							
+c3h = (c3 & 0x3F0) >> 4
+
+d3 = int(4*10**6/(32*147))
+d3l = d3 & 0xF
+d3h = (d3 & 0x3F0) >> 4
+
+e3 = int(4*10**6/(32*165))
+e3l = e3 & 0xF
+e3h = (e3 & 0x3F0) >> 4
+
+f3 = int(4*10**6/(32*175))
+f3l = f3 & 0xF
+f3h = (f3 & 0x3F0) >> 4
+
+g3 = int(4*10**6/(32*196))
+g3l = g3 & 0xF
+g3h = (g3 & 0x3F0) >> 4
+
+a3 = int(4*10**6/(32*220))
+a3l = a3 & 0xF
+a3h = (a3 & 0x3F0) >> 4
+
+note = []
+
+```
+
+The lower set of variables contain bits of data ready to be sent to the SN76489 chip. As described in the previous chapter, the frequency is sent with the number calculated with the formula. This number is then masked with 0xF to isolate 4 least significant bytes, while the remaining 6 bits are determined using 0x3F0 mask and arithetic right shift.
+The lower and higher bits will be sent to the SN76489 with latched and data bits later in the code. A list which will contain certain frequencies based on position of the hand is also introduced
+
+This segment defines resolution of the camera and introduces, hand detector module and list containing fingertip IDs:    
+
+```python
+
+wCam, hCam = 640, 480
+
+cap = cv2.VideoCapture(0)
+cap.set(3, wCam)
+cap.set(4, hCam)
+
+detector = htm.handDetector(detectionCon=0.75)
+tipIds = [4, 8, 12, 16, 20]
+
+```
+
+The three functions shown in the segment below perform identical task as the functions from the sketch, along with added functionalities which compensate for the different data interpretation between Python and C++.
+Aside from ternar operator used in the Arduino sketch, the main difference is the if statment
+C++ automatically sends data in the form of a byte, which means all of the pins automatically receive the necessary data on the pins. Python does not work in this way and excludes significant bits if their value is zero.
+To compensate for this, the putByte functions checks if data needs additional padding: if the value sent is less then 128, the original value is padded with two additional zeros. Otherwise, original bits are sent. This condition is necessary to send data bytes properly.
+Since Data bytes contain values written with only 6 bytes, their value does not exceed 128 and that is the key difference between them and the latched bytes: having 1 as their most significant bit makes their value at least equal to 128.
+
+Sendbyte works exactly like its Arduino counterpart, while SilenceChannel is a slightly modified version and enables muting of as many channels as the user wants, as long as this number is 3.
+
+```python
+
+def putByte(a):
+
+    board.digital_write(D0, 1 if (a & 1) else 0)
+    board.digital_write(D1, 1 if (a & 2) else 0)
+    board.digital_write(D2, 1 if (a & 4) else 0)
+    board.digital_write(D3, 1 if (a & 8) else 0)
+    board.digital_write(D4, 1 if (a & 16) else 0)
+    board.digital_write(D5, 1 if (a & 32) else 0)
+
+    if(a < 128):
+        board.digital_write(D6, 0)
+        board.digital_write(D7, 0)
+    else:
+        board.digital_write(D6, 1 if (a & 64) else 0)
+        board.digital_write(D7, 1 if (a & 128) else 0)
+
+
+def sendByte(b):
+    board.digital_write(WE, 1)
+    putByte(b)
+    board.digital_write(WE, 0)
+    time.sleep(0.001)
+    board.digital_write(WE, 1)
+
+def silenceAllChannels(n):
+    if n == 0:
+        sendByte(0x9F)
+    elif n == 1:
+        sendByte(0xBF)
+    elif n == 2:
+        sendByte(0xDF)
+
+```
+(IZBRIŠI ZADNJI RED ILI SKRATI OPĆENITO)
 
 ## Headers
 
