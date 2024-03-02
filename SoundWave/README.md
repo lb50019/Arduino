@@ -5,21 +5,27 @@ Still unable to forget technical terms used in exams, my friend and I enter thro
 
 It's almost Spring of 2024. My post-concert tinitus is replaced with deafening silence of desk job at an office. There is still one loud sound occupying my head, which says: "I FINALLY DID THE FUNNY CONDUCTOR THING".
 
-This is my original project. I am very proud to say that I haven't found anything similar on the web nor relied on other peoples' concepts, and as such this project allows me to present my personality and way of thinking. It took long hours of unguided thinking, imagining and waiting to set every detail right. If you find something similar, it's probably a project of the guy I was talking to back in 2022 and he ripped my idea.
+I came up with the concept and practical solutions of this project by myself and used internet for guidance. Using multiple sources for each part of the project I also learned their logic and behavior. This was neccessary since the final outcome of this project is something I came up with by myself and didn't find on the internet.
+If you find something similar, it's probably a project of the guy I was talking to back in 2022 and he ripped my idea.
 
 # The Code
 
-The basic premise of this project was to control something by hand gestures. Years of SF movies are responsible for this. 
-The easiest way to implement this kind of interaction is by using Google's framework mediapipe created primarily for Python.
+The basic premise of this project was to control something by hand gestures. 
+The easiest way to implement this kind of interaction is by using Google's framework [mediapipe](https://developers.google.com/mediapipe) created primarily for Python.
 Mediapipe contains a lot of computer vision models for all kinds of purposes and one of them is Hand Tracking. Using two modules at the backend (Palm Detection and Hand Landmarks),
 the Hand Tracking crops the given image so that only one hand is visible, adding landmarks afterwards.
 This is useful for triggering events based on the position of hands on the screen, as well as relative position of fingers.
 
 ![Hand landmarks.](hand-landmarks.png "Hand landmarks.")
 
-The easiest way to implement mediapipe is by using PyCharm IDE, which enables a simple installation of all available packages with a few clicks. This necessitates usage of OpenCV library as well.
+The easiest way to implement mediapipe is by using [PyCharm IDE](https://www.jetbrains.com/pycharm/), which enables a simple installation of all available packages with a few clicks. This requires usage of OpenCV library as well.
 After typing the basic lines of code to display the webcam, Hands module must be implemented.
-It requires four parameters: static_image_mode (default: False), max_num_hands (default: 2), min_detection_confidence (default: 0.5) and min_tracking_confidence (0.5).
+It requires four parameters:
+* static_image_mode (default: False)
+* max_num_hands (default: 2)
+* min_detection_confidence (default: 0.5)
+* min_tracking_confidence (0.5).
+
 The first parameter determines wheter the module detects or tracks hands on the image. This choice depends on the tracking confidence level:
 low level equals detection, high level equals tracking. Thresholds for detection and tracking are set up with min_detection_confidence and min_tracking_confidence.
 The code snippet below displays detected landmarks:
@@ -120,7 +126,9 @@ if __name__ == "__main__":
 
 By this point the code doesn't do much except drawing  a very crude outline of hands. To put Google's research to good use, we need utilize its function.
 One of the most basic signals we humans can do with our hands is pointing fingers. Another well known signal we humans tend to produce is a closed fist, often times representing something bad is about to happen to the observer.
-In light of these observations I decided to intepret raised finger as a positive and lowered (folded) finger as negative. Consulting the landmark diagram, it is obvious that the y coordinate of the tip of the finger is positioned higher than the other parts of the finger. The opposite is true for the folded finger: the tip is positioned lower than other parts. By comparing coordinates of the tip with some other part of the same finger it is possible to control the value of variables using fingers as input. In this project each finger is represented by a variable with two possible states: raised (1) or lowered (0). These variables are then stored into a list for improved readability.
+In light of these observations I decided to intepret raised finger as a positive and lowered (folded) finger as negative. Consulting the landmark diagram, it is obvious that the y coordinate of the tip of the finger is positioned higher than the other parts of the finger. The opposite is true for the folded finger: the tip is positioned lower than other parts.
+By comparing coordinates of the tip with some other part of the same finger it is possible to control the value of variables using fingers as input.
+In this project each finger is represented by a variable with two possible states: raised (1) or lowered (0). These variables are then stored into a list for improved readability.
 This thought process is realized with the following code:
 
 ```python
@@ -157,7 +165,8 @@ while 1:
 
 #SN76489
 
-Barely larger than a raisin, this chip contains a whole decade of sound design and still refuses to leave in silence. It was made by Texas Instruments in 1979 and for the next 10 years it sat comfortably in cases of many home computers and arcade machines. This chip is a Digital Complex Sound Generator (DSCG) with 3 square wave tone generators and one noise generator. The three tone generators were used for melodies, while the noise channel found its use in simulating sounds of explosions or percussion.
+Barely larger than a raisin, this chip contains a whole decade of sound design and still refuses to leave in silence. It was made by Texas Instruments in 1979 and for the next 10 years it sat comfortably in cases of many home computers and arcade machines.
+This chip is a Digital Complex Sound Generator (DSCG) with 3 square wave tone generators and one noise generator. The three tone generators were used for melodies, while the noise channel found its use in simulating sounds of explosions or percussion.
 
 ## Pins
 ![SN76489 pins.](SN76489_pinout.png "SN76489 pins")
@@ -185,8 +194,8 @@ or in form of equation:
 
 where f is the desired frequency. This number must be translated to binary form.
 
-The chip receives input from 8 digital pins, as well as from a 4 MHz crystal oscillator which powers its IC.
-A microprocessor programs the IC by sending bytes of data from pins D0 - D7.
+The chip receives input from 8 digital pins, as well as from a 4 MHz crystal oscillator which powers its IC (integrated circuit).
+Arduino's microprocessor can be used to program the IC by sending bytes of data from pins D0 - D7.
 The bytes which can be sent to the chip are one of the two - either latched or data byte. 
 * Latched bytes: Four significant bits carry the information about the desired channel, while the lower four bits store the first four bits of the number calculated with the formula above
 * Data bytes: 2 most significant bits are 0, while the rest contain last 6 bits of calculated number.
@@ -208,8 +217,9 @@ The basic process with this chip is that you set up a byte on the eight data pin
 ## COMPOSER OR COMPILER?
 
 In contrast to everything mentioned above, coding proves to be quite simple. All it takes is three functions.
-Pins are assigned in the setup() function with pinMode() and data is sent with digitalWrite(). Sending bytes works the same way as sending one bit, only difference being that the same function must be called 8 times for every bit in the byte.
-My solution to this was checking the value of each bit in a for loop. Checking is performed with *bitwise and operator* and a variable called *bit*, which is shifted at the end of every loop to isolate and verify the value of each bit.
+Pins are assigned in the setup() function with pinMode() and data is sent with digitalWrite().
+Sending bytes works the same way as sending one bit, only difference being that the same function must be called 8 times for every bit in the byte.
+My solution to this was checking the value of each bit in a for loop. Checking is performed with *bitwise and operator* and a variable called *bit*, which is shifted to the left at the end of every loop to isolate and verify the value of each bit.
 It ends up looking like this:
 
 (SendByte funkcija)
@@ -229,6 +239,7 @@ void putByte(byte b)
 	}
 }
 ```
+
 Sending pulse to WE pin:
 
 ```c
@@ -245,7 +256,7 @@ void sendByte(byte b)
 ```
 
 Many music teachers will tell you that melodies sound good precisely becuse of the silence between the notes. So to ascend to the higher level of musical prowess a silencing function is added:
-It basically sends latched bytes with address and 4-bit data regarding volume: higher number means lower volume. Hence, total silence equals 1111 or F if you want to pay respects.
+It basically sends latched bytes with address and 4-bit data regarding volume: higher number means lower volume. Hence, total silence equals 1111 or 0xF.
 
 ```c
 
@@ -261,7 +272,6 @@ void SilenceAllChannels()
 
 Here is a simple Arduino sketch playing notes A, B and C:
 
-(STAVI OBRAZLOŽENJE, KAKO SE DOBIJE BAJT, KAKO I ZAŠTO IZGLEDA LATCHED I DATA BYTE)
 In this example, I decided to continuously play C3 (128 Hz), E3 (165 Hz) and G3 (196 Hz).
 
 ### C3
@@ -288,7 +298,7 @@ This is how the Arduino sketch version of this thought process looks like:
 
 # (Monty) Python sketch
 
-My Chimera is almost finished. This chapter shows how I merged Computer Vision and Arduino programming with DIY electronics and soldering. This last part was made as a part of a workshop led by Tin Dužić (link neke stranice). 
+This chapter shows how I merged Computer Vision and Arduino programming with DIY electronics and soldering. This last part was made as a part of a workshop led by Tin Dužić (link neke stranice). 
 
 
 ## Amplifier
@@ -306,24 +316,25 @@ The + and ground wires are connected to pin 7 of SN76489 and common ground respe
 
 ## (Monty) Python sketch
 
-To finally break the silence of this project, it is necessary to break the ice between Arduino and Python. This is made possible by bridging the gap from both sides.
-* pymata4: a Python 3 compatible Firmata protocol which enables the user to control Arduino with the power of the most accessible programming language out there. (https://mryslab.github.io/pymata4/)
-** a high-performance multi-threaded Python application. Its "command thread" translates user API calls into Firmata protocol messages and forwards these messages to the Arduino microcontroller.
-** the "reporter thread" receives, interprets and acts upon the Firmata messages received from the Arduino microcontroller.
-* FirmataPlus: a generic protocol for communicating with microcontrollers from software on a host computer
-** it uses serial interface to transport both command and report information between an Arduino microcontroller and a PC, typically with a serial/USB link set to a rate of 57600 bps.
-** essentially an upgraded version of Firmata enabling tone commands among others.
+To finally break silence of this project, it is necessary to break the ice between Arduino and Python. This is made possible by bridging the gap from both sides.
+1. pymata4: a Python 3 compatible Firmata protocol which enables the user to control Arduino with the power of the most accessible programming language out there. (https://mryslab.github.io/pymata4/)
+* a high-performance multi-threaded Python application. Its "command thread" translates user API calls into Firmata protocol messages and forwards these messages to the Arduino microcontroller.
+* the "reporter thread" receives, interprets and acts upon the Firmata messages received from the Arduino microcontroller.
+2. FirmataPlus: a generic protocol for communicating with microcontrollers from software on a host computer
+* it uses serial interface to transport both command and report information between an Arduino microcontroller and a PC, typically with a serial/USB link set to a rate of 57600 bps.
+* essentially an upgraded version of Firmata enabling tone commands among others.
 
 In this project, the PC using PyMata library serves as a client to the server which is uploaded to Arduino in form of FirmataPlus.
 Firmata uses a serial communications interface to transport data to and from the Arduino. The Firmata communications protocol is derived from the MIDI protocol which uses one or more 7 bit bytes to represent data.
-Because 7 bits can hold a maximum value of 128, a data item that has a value greater than 128, must be "disassembled" into multiple 7 bit byte chunks before being marshaled across the data link.
+Because 7 bits can hold a maximum value of 128, a data item that has a value greater than 128, must be disassembled into multiple 7 bit byte chunks before being marshaled across the data link.
 By convention, the least significant byte (LSB) of a data item is sent first, followed by increasingly significant components of the data item.
 The most significant byte (MSB) of the data item is the last data item sent.
 
 ## The Code
 
 This project requires opencv and pymata4 libraries. The HandTrackingModule discussed in the Computer Vision Chapter is also included.
-Some of the functions replicate behavior of functions written in Arduino sketch. Back there, delay() function was used to synchronize signals. The same effect can be achieved using time module's sleep() method.
+Some of the functions replicate behavior of functions written in Arduino sketch. Back there, delay() function was used to synchronize signals.
+The same effect can be achieved using time module's sleep() method.
 
 ```python
 
@@ -482,8 +493,7 @@ The meat of this project is the endless while loop shown below. It can be summar
 * read data from camera and initialize hand tracking algorithm to recognize one hand. Store results of detection in a list containing hand landmark indexes
 * if a hand is detected, for each individual finger check if its raised up or folded down. Append 1 to the fingers list if raised, otherwise append 0.
 * If condition for thumb compares x coordinates, while the rest of the fingers are determined with y coordinate
-* depending in the position of the hand, choose the apropriate frequency 
-* lower notes are played for lower position
+* depending on the position of the hand, choose the apropriate frequency. Lower notes are played for lower position
 * if the fingers list is not empty, send bytes of chosen frequency to the SN76489 soundchip. If the finger is closed, mute the corresponding channel
 * display the result on the camera using imshow
 
@@ -491,11 +501,11 @@ The meat of this project is the endless while loop shown below. It can be summar
 
 while 1:
     success, img = cap.read()
-    img = detector.findHands(img)
-    lmList1 = detector.findPosition(img, 0, draw=False)
+    img = detector.findHands(img)										# start detection
+    lmList1 = detector.findPosition(img, 0, draw=False)					# store landmark position in lmList1 
 
     fingers = []
-    if lmList1:
+    if lmList1:															# if a hand is detected, determine if each finger is raised or folded 
 
         if lmList1[tipIds[0]][1] > lmList1[tipIds[0] - 1][1]:
             fingers.append(1)
@@ -508,7 +518,7 @@ while 1:
             else:
                 fingers.append(0)
 
-        if lmList1[13][2] < 60:
+        if lmList1[13][2] < 60:											# change contents of list called note depending on the position of detected hand
             note = [[c4l, c4h], [e4l, e4h], [g4l, g4h]]
         elif lmList1[13][2] < 120 and lmList1[13][2] > 60:
             note = [[b3l, b3h], [d4l, d4h], [f4l, f4h]]
@@ -528,7 +538,7 @@ while 1:
         #print(fingers)
         print(lmList1[13][2])
 
-    if fingers:
+    if fingers:															# send data to SN76489 based on position of fingers
 
         if fingers[0]:
             sendByte(0x90)
@@ -551,108 +561,7 @@ while 1:
         else:
             silenceChannel(2)
 
-    cv2.imshow("img", img)
+    cv2.imshow("img", img)												# display results
     cv2.waitKey(1)
 
 ```
-
-
-## Headers
-
-# This is a Heading h1
-## This is a Heading h2
-
-
-```c
-void setup() {
-
-  Serial.begin(9600);
-}
-
-void loop() {
-  //int a0 = analogRead(A0);
-  int a1 = analogRead(A1);
-  Serial.print(0);
-  //Serial.print(",");
-  //Serial.println(a0);
-  Serial.print(",");
-  Serial.println(a1);
-  delay(1);
-}
-```
-###### This is a Heading h6
-
-## Emphasis
-
-*This text will be italic*  
-_This will also be italic_
-
-**This text will be bold**  
-__This will also be bold__
-
-_You **can** combine them_
-
-## Lists
-
-### Unordered
-
-* Item 1
-* Item 2
-* Item 2a
-* Item 2b
-
-### Ordered
-
-1. Item 1
-2. Item 2
-3. Item 3
-    1. Item 3a
-    2. Item 3b
-
-## Images
-
-![This is an alt text.](val12.png "Live circuit reaction.")
-
-## Summary
-
-> **What is this?**
->
->> Sound Detection circuit.
-	
-> **Is it useful?**
->
->> No, not by itself.
-	
-> **Why would I want do build one?**
->
->> You can make many other projects on top of this one to impress people coming from LinkedIn. Go and check my other projects on this repo to become inspired!    
-
-## Links
-
-You may be using [Markdown Live Preview](https://markdownlivepreview.com/).
-
-## Blockquotes
-
-> Markdown is a lightweight markup language with plain-text-formatting syntax, created in 2004 by John Gruber with Aaron Swartz.
->
->> Markdown is often used to format readme files, for writing messages in online discussion forums, and to create rich text using a plain text editor.
-
-## Tables
-
-| Left columns  | Right columns |
-| ------------- |:-------------:|
-| left foo      | right foo     |
-| left bar      | right bar     |
-| left baz      | right baz     |
-
-## Blocks of code
-
-```
-let message = 'Hello world';
-alert(message);
-```
-
-## Inline code
-
-This web site is using `markedjs/marked`.
-
