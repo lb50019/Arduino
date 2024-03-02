@@ -6,10 +6,7 @@ While this might be true for bells and us humans, this proverb fell on deaf ears
 
 This project demonstrates a basic circuit using a microphone and OP-amp alongside few passive components and as such can be used as the basis for frequency analysis and all sorts of sound detection projects.
 
-## Headers
-
-# This is a Heading h1
-## This is a Heading h2
+## The Project
 
 The very mention of sound detection implies usage of microphones, types of transducers which convert sound to electric signal. Not only is the output signal very weak even for nearby sources of sound, but it also contains noise. For this reason the LM386 amplifier is conected to the mic with electrolytic capacitors which filter out unwanted noise. The schematic below shows one way of achieving amplification of filtered signal.
 
@@ -38,20 +35,15 @@ void loop() {
 }
 ```
 
-## Images
-
 ![This is an alt text.](val12.png "Live circuit reaction.")
 
-## Summary
+## Workshop experience
 
-> **What is this?**
->
->> Sound Detection circuit.
-	
-> **Is it useful?**
->
->> No, not by itself.
-	
-> **Why would I want do build one?**
->
->> You can make many other projects on top of this one to impress people coming from LinkedIn. Go and check my other projects on this repo to become inspired!    
+Just as I was finishing this project I stumbled upon a *completely free* workshop in my area. It was the final segment of DIY workshops in which all attendees got to solder their own speaker with 6mm audio jack as input.
+The workshop, held by Tin Dožić in [MaMa - Multimedia Institute](https://mi2.hr/), provided free materials identical to the components I used. Instead of breadboard, parts were assembled and soldered on a stripboard, so every atendee went out with a fixed smile and equally fixed components.
+
+![MaMa speaker](MaMa_speaker.png "MaMa speaker.")
+
+![Mama speaker](MaMa_speaker.mp4 "MaMa speaker ")
+
+This speaker can be used to play music from a cell phone or as a guitar amp. If you have no idea what to do with, let me give you a *hand* with *detecting* your capabilities.
