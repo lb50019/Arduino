@@ -6,11 +6,6 @@ What I mean is the real meat of this project lies within the code. With this pro
 
 Circuit diagram code segments are shown below. You can find the complete code at the bottom of this readme.   
 
-## Headers
-
-# This is a Heading h1
-## Code explanation
-
 
 ![This is an alt text.](ledo.png "Circuit diagram.")
 
@@ -81,40 +76,3 @@ if(millis() - ClapDetetedTime[2] < 800 && millis() - ClapDetetedTime[1] < 800 &&
 The main part of this code is used for reading values from pin 2 and switching on the LED diode if a double clap is detected. Detection is successful if time between two claps is less than 800 miliseconds.
 the if statement also takes time between the third and second newest clap into account. This is done so as to filter out switching when there are more than two consecutive claps detected at a short interval.
 When the condition are met, the value of lightState is inverted. This way the diode switches on if it was turned off and vice versa.
-
-###### This is a Heading h6
-
-## Emphasis
-
-*This text will be italic*  
-_This will also be italic_
-
-**This text will be bold**  
-__This will also be bold__
-
-_You **can** combine them_
-
-## Lists
-
-### Unordered
-
-* Item 1
-* Item 2
-* Item 2a
-* Item 2b
-
-### Ordered
-
-1. Item 1
-2. Item 2
-3. Item 3
-    1. Item 3a
-    2. Item 3b
-
-## Images
-
-## Summary
-
-> **What is this?**
->
->> Sound Detection circuit.
