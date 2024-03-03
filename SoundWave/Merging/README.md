@@ -1,6 +1,6 @@
-# (Monty) Python sketch
+# Real-life Assembler
 
-This chapter shows how I merged Computer Vision and Arduino programming with DIY electronics and soldering. This last part was made as a part of a workshop led by Tin Dužić (link neke stranice). 
+This chapter shows how I merged Computer Vision and Arduino programming with DIY electronics and soldering. The last part was made as a part of a workshop led by Tin Dužić (link neke stranice). 
 
 
 ## Amplifier
@@ -19,12 +19,12 @@ The + and ground wires are connected to pin 7 of SN76489 and common ground respe
 ## (Monty) Python sketch
 
 To finally break silence of this project, it is necessary to break the ice between Arduino and Python. This is made possible by bridging the gap from both sides.
-1. pymata4: a Python 3 compatible Firmata protocol which enables the user to control Arduino with the power of the most accessible programming language out there. (https://mryslab.github.io/pymata4/)
-* a high-performance multi-threaded Python application. Its "command thread" translates user API calls into Firmata protocol messages and forwards these messages to the Arduino microcontroller.
-* the "reporter thread" receives, interprets and acts upon the Firmata messages received from the Arduino microcontroller.
-2. FirmataPlus: a generic protocol for communicating with microcontrollers from software on a host computer
-* it uses serial interface to transport both command and report information between an Arduino microcontroller and a PC, typically with a serial/USB link set to a rate of 57600 bps.
-* essentially an upgraded version of Firmata enabling tone commands among others.
+* [pymata4]((https://mryslab.github.io/pymata4/)): a Python 3 compatible Firmata protocol which enables the user to control Arduino with the power of the most accessible programming language out there.
+	* a high-performance multi-threaded Python application. Its "command thread" translates user API calls into Firmata protocol messages and forwards these messages to the Arduino microcontroller.
+	* the "reporter thread" receives, interprets and acts upon the Firmata messages received from the Arduino microcontroller.
+* [FirmataPlus](https://github.com/acen2009/FirmataPlus): a generic protocol for communicating with microcontrollers from software on a host computer
+	* it uses serial interface to transport both command and report information between an Arduino microcontroller and a PC, typically with a serial/USB link set to a rate of 57600 bps.
+	* essentially an upgraded version of Firmata enabling tone commands among others.
 
 In this project, the PC using PyMata library serves as a client to the server which is uploaded to Arduino in form of FirmataPlus.
 Firmata uses a serial communications interface to transport data to and from the Arduino. The Firmata communications protocol is derived from the MIDI protocol which uses one or more 7 bit bytes to represent data.
@@ -61,72 +61,43 @@ D6 = 8
 D7 = 9
 WE = 10
 
-board.set_pin_mode_digital_output(D0)
-board.set_pin_mode_digital_output(D1)
-board.set_pin_mode_digital_output(D2)
-board.set_pin_mode_digital_output(D3)
-board.set_pin_mode_digital_output(D4)
-board.set_pin_mode_digital_output(D5)
-board.set_pin_mode_digital_output(D6)
-board.set_pin_mode_digital_output(D7)
-board.set_pin_mode_digital_output(WE)
+pins = [D0, D1, D2, D3, D4, D5, D6, D7, WE]
+
+for i in range(len(pins)):
+	board.set_pin_mode_digital_output(pins[i])
+
 board.digital_write(WE, 1)
+	
+c3 = 128
+d3 = 147
+e3 = 165
+f3 = 175
+g3 = 196
+a3 = 220
+b3 = 247
+c4 = 2 * c3
+d4 = 2 * d3
+e4 = 2 * e3
+f4 = 2 * f3
+g4 = 2 * g3 
 
-c3 = int(4*10**6/(32*128))
-c3l = c3 & 0xF
-c3h = (c3 & 0x3F0) >> 4
+freqs = [c3, d3, e3, f3, g3, a3, b3, c4, d4, e4, f4, g4]
 
-d3 = int(4*10**6/(32*147))
-d3l = d3 & 0xF
-d3h = (d3 & 0x3F0) >> 4
+lnh = [[0]*2 for i in range(len(freqs))] 
 
-e3 = int(4*10**6/(32*165))
-e3l = e3 & 0xF
-e3h = (e3 & 0x3F0) >> 4
+for i in range(len(freqs)):
+	data = int(4*10**6/(32*freqs[i]))
+	lnh [i][0] = data & 0xF
+	lnh [i][1] = (data & 0x3F0) >> 4
 
-f3 = int(4*10**6/(32*175))
-f3l = f3 & 0xF
-f3h = (f3 & 0x3F0) >> 4
-
-g3 = int(4*10**6/(32*196))
-g3l = g3 & 0xF
-g3h = (g3 & 0x3F0) >> 4
-
-a3 = int(4*10**6/(32*220))
-a3l = a3 & 0xF
-a3h = (a3 & 0x3F0) >> 4
-
-b3 = int(4*10**6/(32*247))
-b3l = b3 & 0xF
-b3h = (b3 & 0x3F0) >> 4
-
-c4 = int(4*10**6/(32*261))
-c4l = c4 & 0xF
-c4h = (c4 & 0x3F0) >> 4
-
-d4 = int(4*10**6/(32*294))
-d4l = d4 & 0xF
-d4h = (d4 & 0x3F0) >> 4
-
-e4 = int(4*10**6/(32*330))
-e4l = e4 & 0xF
-e4h = (e4 & 0x3F0) >> 4
-
-f4 = int(4*10**6/(32*350))
-f4l = f4 & 0xF
-f4h = (f4 & 0x3F0) >> 4
-
-g4 = int(4*10**6/(32*392))
-g4l = g4 & 0xF
-g4h = (g4 & 0x3F0) >> 4
-note = []
+note = [[0]*2 for i in range(3)]
 
 ```
 
-The lower set of variables contain bits of data ready to be sent to the SN76489 chip. As described in the previous chapter, the frequency is sent with the number calculated with the formula. This number is then masked with 0xF to isolate 4 least significant bytes, while the remaining 6 bits are determined using 0x3F0 mask and arithetic right shift.
-The lower and higher bits will be sent to the SN76489 with latched and data bits later in the code. A list which will contain certain frequencies based on position of the hand is also introduced
+As described in the SN76489 segment, the frequency is sent with the number calculated with the formula. This number is then masked with 0xF to isolate 4 least significant bytes, while the remaining 6 bits are determined using 0x3F0 mask and arithetic right shift.
+The lower and higher bits will be sent to the SN76489 with latched and data bits later in the code. A list which will contain certain frequencies based on position of the hand is also initialized.
 
-This segment defines resolution of the camera and introduces, hand detector module and list containing fingertip IDs:    
+This segment defines resolution of the camera, hand detector module and list containing fingertip IDs:    
 
 ```python
 
