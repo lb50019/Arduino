@@ -49,7 +49,7 @@ while True:
      	cv2.imshow("Screen", img)
 	cv2.waitKey(1)
 ```
-To make this code accessible, this simple snippets needs to be written in a form of a class. After proper rearrangement, the code now looks like this:
+To make this algorithm available for other programs, this simple snippet needs to be written in a form of a class. After proper rearrangement, the code now looks like this:
 
 ```python
 
@@ -69,10 +69,10 @@ class handDetector():
 		self.mpDraw = mp.solutions.drawing_utils
 		
 	def findHands(self, img, draw = True):													
-		imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)										# mediapipe works only with RGB images
-		self.results = hands.process(imgRGB)												# algorithm implementation
+		imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)	# mediapipe works only with RGB images
+		self.results = hands.process(imgRGB)	# algorithm implementation
 	
-		if results.multi_hand_landmarks:													# iterate through detected landmarks
+		if results.multi_hand_landmarks:	# iterate through detected landmarks
 			for handLms in self.results.multi_hand_landmarks:
 				if draw:			
 					self.mpDraw.draw_landmarks(img, handLms, mpHands.HANDS_CONNECTIONS)		# displays original BGR image with the handmark layer
@@ -89,7 +89,7 @@ class handDetector():
 		
 			for id, lm in enumerate(handLms.landmark):
 				h, w, c = img.shape()
-				cx, cy = int(lm.x * w), int(lm.y * h)										# calculating x and y coordinates of each landmark using image dimensions
+				cx, cy = int(lm.x * w), int(lm.y * h)	# calculating x and y coordinates of each landmark using image dimensions
 				lmList.append([id, cx, cy])
 
 		return lmList
@@ -114,9 +114,12 @@ if __name__ == "__main__":
 	
 ```
 
-By this point the code doesn't do much except drawing  a very crude outline of hands. To put Google's research to good use, we need utilize its function.
+By this point the code doesn't do much except drawing a very crude outline of hands. To put Google's research to good use, we need to utilize its function.
+
 One of the most basic signals we humans can do with our hands is pointing fingers. Another well known signal we humans tend to produce is a closed fist, often times representing something bad is about to happen to the observer.
-In light of these observations I decided to intepret raised finger as a positive and lowered (folded) finger as negative. Consulting the landmark diagram, it is obvious that the y coordinate of the tip of the finger is positioned higher than the other parts of the finger. The opposite is true for the folded finger: the tip is positioned lower than other parts.
+In light of these observations I decided to intepret raised finger as a positive and lowered (folded) finger as negative. Consulting the landmark diagram, it is obvious that the y coordinate of the tip of the finger is positioned higher than the other parts of the finger.
+The opposite is true for the folded finger: the tip is positioned lower than other parts.
+
 By comparing coordinates of the tip with some other part of the same finger it is possible to control the value of variables using fingers as input.
 In this project each finger is represented by a variable with two possible states: raised (1) or lowered (0). These variables are then stored into a list for improved readability.
 This thought process is realized with the following code:
@@ -128,26 +131,32 @@ import time
 import HandTrackingModule as htm
 
 detector = htm.handDetector()
-tipIDs = [4, 8, 12, 16, 20]
+tipIDs = [4, 8, 12, 16, 20]		# IDs of fingertips
 
 while 1:
 	success, img = cap.read()
 	img = detector.finHands(img)
-	lmList = detector.findPosition(img, draw = False)
+	lmList = detector.findPosition(img, draw = False)	# store position of each landmark in lmList
 	
 	if len(lmList) != 0:
 		fingers = []
 
-   		if lmList[tipIDs[0]][1] > lmList[tipIDs[0]-1][1]:
+   		if lmList[tipIDs[0]][1] > lmList[tipIDs[0]-1][1]:	# thumb is positioned horizontally, therefore x coordinates are compared
    			fingers.append(1)
    		else:
    			fingers.append(0)
    			
-   		for id in range(1,5):	#iterate through rest of fingers
+   		for id in range(1,5):	#iterate through rest of fingers	# rest of the fingers are positioned vertically, which requires copmarison of y coordinates with lower parts of fingers
    			if lmList[tipIDs[id]][2] < lmList[tipIDs[id]-2][2]:
    				fingers.append(1)
    			else:
    				fingers.append(0)
+   				
+   				
+   	if fingers:
+   		#DO SOMETHING
 
 ```
 
+The final version of the code contains a list called fingers, which stores information of each fingers' state.
+If a finger is raised, the corresponding value is 1, otherwise it is 0. This can be used to control up to five different parameters with only one hand.

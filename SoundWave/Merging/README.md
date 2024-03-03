@@ -19,7 +19,7 @@ The + and ground wires are connected to pin 7 of SN76489 and common ground respe
 ## (Monty) Python sketch
 
 To finally break silence of this project, it is necessary to break the ice between Arduino and Python. This is made possible by bridging the gap from both sides.
-* [pymata4]((https://mryslab.github.io/pymata4/)): a Python 3 compatible Firmata protocol which enables the user to control Arduino with the power of the most accessible programming language out there.
+* [pymata4](https://mryslab.github.io/pymata4/): a Python 3 compatible Firmata protocol which enables the user to control Arduino with the power of the most accessible programming language out there.
 	* a high-performance multi-threaded Python application. Its "command thread" translates user API calls into Firmata protocol messages and forwards these messages to the Arduino microcontroller.
 	* the "reporter thread" receives, interprets and acts upon the Firmata messages received from the Arduino microcontroller.
 * [FirmataPlus](https://github.com/acen2009/FirmataPlus): a generic protocol for communicating with microcontrollers from software on a host computer

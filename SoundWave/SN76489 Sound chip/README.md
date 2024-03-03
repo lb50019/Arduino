@@ -1,7 +1,10 @@
 #SN76489
 
-Barely larger than a raisin, this chip contains a whole decade of sound design and still refuses to leave in silence. It was made by Texas Instruments in 1979 and for the next 10 years it sat comfortably in cases of many home computers and arcade machines.
-This chip is a Digital Complex Sound Generator (DSCG) with 3 square wave tone generators and one noise generator. The three tone generators were used for melodies, while the noise channel found its use in simulating sounds of explosions or percussion.
+Barely larger than a raisin, this chip contains a whole decade of sound design and still refuses to leave in silence. 
+It was made by Texas Instruments in 1979 and for the next 10 years it sat comfortably in cases of many home computers and arcade machines.
+
+This chip is a *Digital Complex Sound Generator* (DSCG) with 3 square wave tone generators and one noise generator.
+The three tone generators were used for melodies, while the noise channel found its use in simulating sounds of explosions or percussion.
 
 ## Pins
 ![SN76489 pins.](SN76489_pinout.png "SN76489 pins")
@@ -31,7 +34,7 @@ where f is the desired frequency. This number must be translated to binary form.
 
 The chip receives input from 8 digital pins, as well as from a 4 MHz crystal oscillator which powers its IC (integrated circuit).
 Arduino's microprocessor can be used to program the IC by sending bytes of data from pins D0 - D7.
-The bytes which can be sent to the chip are one of the two - either latched or data byte. 
+The bytes which can be sent to the chip are one of the two - either *latched* or *data* byte. 
 * Latched bytes: Four significant bits carry the information about the desired channel, while the lower four bits store the first four bits of the number calculated with the formula above
 * Data bytes: 2 most significant bits are 0, while the rest contain last 6 bits of calculated number.
 
@@ -45,9 +48,6 @@ The data sheet of SN76489 provides a diagram which shows how to send bytes.
 The basic process with this chip is that you set up a byte on the eight data pins, then briefly pulse the /WE pin low to tell the chip that the byte is ready.
 
 ![flow.](flow.png "Flow")
-
-
-
 
 ## COMPOSER OR COMPILER?
 
@@ -112,4 +112,79 @@ In this example, I decided to continuously play C3 (128 Hz), E3 (165 Hz) and G3 
 * I want to play this tone at channel 2 (0xC), so my latched and data bytes are 0xCD and 0x27
 
 This is how the Arduino sketch version of this thought process looks like:
-(OVDJE IDE KOD)
+
+```c
+
+//---------------------------------------
+//SN76489 Digital Complex Sound Generator
+//---------------------------------------
+#define D0 2
+#define D1 3
+#define D2 4
+#define D3 5
+#define D4 6
+#define D5 7
+#define D6 8
+#define D7 9
+#define WE 10
+//==============================================================
+void PutByte(byte b)
+{
+  digitalWrite(D0, (b&1)?HIGH:LOW);
+  digitalWrite(D1, (b&2)?HIGH:LOW);
+  digitalWrite(D2, (b&4)?HIGH:LOW);
+  digitalWrite(D3, (b&8)?HIGH:LOW);
+  digitalWrite(D4, (b&16)?HIGH:LOW);
+  digitalWrite(D5, (b&32)?HIGH:LOW);
+  digitalWrite(D6, (b&64)?HIGH:LOW);
+  digitalWrite(D7, (b&128)?HIGH:LOW);
+}
+//==============================================================
+void SendByte(byte b)
+{
+  digitalWrite(WE, HIGH);
+  PutByte(b);
+  digitalWrite(WE, LOW);
+  delay(1);
+  digitalWrite(WE, HIGH);
+}
+//==============================================================
+void SilenceAllChannels()
+{
+  SendByte(0x9F); //mute channel 0
+  SendByte(0xBF); //mute channel 1
+  SendByte(0xDF); //mute channel 2
+  SendByte(0xFF); //mute noise channel
+}
+
+//==============================================================
+void setup()
+{
+  pinMode(D0, OUTPUT); pinMode(D1, OUTPUT); pinMode(D2, OUTPUT);
+  pinMode(D3, OUTPUT); pinMode(D4, OUTPUT); pinMode(D5, OUTPUT);
+  pinMode(D6, OUTPUT); pinMode(D7, OUTPUT);
+  pinMode(WE, OUTPUT); digitalWrite(WE, HIGH);
+  //------------------------------------------------------------
+  SilenceAllChannels(); //mute all channels of SN76489
+  delay(2000);
+}
+//==============================================================
+void loop()
+{ 
+  SendByte(0x90); //channel 0 maximum volume
+  //different tone frequencies @ channel 0
+  SendByte(0x8F); SendByte(0x3F); //130Hz tone
+  delay(1000);
+  //--------------------------------------------------------
+  SendByte(0x81); SendByte(0x27); //165Hz tone
+  delay(1000);
+  //--------------------------------------------------------
+  SendByte(0x81); SendByte(0x1A); //196Hz tone
+  delay(1000);
+  //--------------------------------------------------------
+}
+
+```
+
+This simple Arduino sketch concludes the readme, although the info provided is not enough to reign supreme on the Billboard, since there is still an audio output device missing.
+If you are interested in my solution, you can continue reading the Merging part of this project. 
