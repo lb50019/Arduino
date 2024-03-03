@@ -192,8 +192,8 @@ while 1:
                 fingers.append(0)
 
         if lmList1[13][2] < 60:											# change contents of list called note depending on the position of detected hand
-            note = [[c4l, c4h], [e4l, e4h], [g4l, g4h]]
-        elif lmList1[13][2] < 120 and lmList1[13][2] > 60:
+            note = [[c4l, c4h], [e4l, e4h], [g4l, g4h]]					# higher the hand, higher the notes
+        elif lmList1[13][2] < 120 and lmList1[13][2] > 60:				# SN76489 can play only 3 notes simultaneously
             note = [[b3l, b3h], [d4l, d4h], [f4l, f4h]]
         elif lmList1[13][2] < 180 and lmList1[13][2] > 120:
                 note = [[a3l, a3h], [c4l, c4h], [e4l, e4h]]
